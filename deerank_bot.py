@@ -1,5 +1,5 @@
 # ID 733686227684818946
-# token NzMzNjg2MjI3Njg0ODE4OTQ2.XxGx0Q.kijzk6efHHcXccrLnDHs-pfQwFE
+# tokenNzMzNjg2MjI3Njg0ODE4OTQ2.Xxk-Iw.jDF9961Smhi8lVYN-6G2Dj3tuMMToken
 
 import discord
 from discord.ext import commands, tasks
@@ -8,8 +8,17 @@ import random
 from dad_joke import *
 from shakespeare_insults import *
 
-deerank=commands.Bot(command_prefix='>')
+# to add logging with logging module
+# import logging
 
+# logger=logging.getLogger('discord')
+# logger.setLevel(logging.NOTSET)
+# handler=logging.FileHandler(filename='discord.log',encoding='utf-8',mode='w')
+# handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+# logger.addHandler(handler)
+
+
+deerank=commands.Bot(command_prefix='>')
 
 @deerank.event                  # when it logs in
 async def on_ready():
@@ -17,11 +26,17 @@ async def on_ready():
 
 @deerank.command()              # to make the bot logout
 async def leave(ctx):
-    await deerank.close()
-
-@deerank.command()              # pinging
-async def ping(ctx):
-    await ctx.send(f'Pong!\n {round(deerank.latency * 1000)}ms')
+    try:
+        if ctx.message.guild.owner_id==ctx.message.author.id:
+            await deerank.close()
+        else:
+            await ctx.send("You are not authorised to kick me out!")
+    except Exception as e:
+        await ctx.send("An error occured. This will be logged for reference.")
+        with open('deerank.log','a') as logger:
+            logger.write(f"message: {ctx.message.content}\nlogged: {str(e)}\n\n")
+    finally:
+        pass
 
 @deerank.command(aliases=['8ball'])         # 8ball
 async def _8ball(ctx, *, question=None):
@@ -34,7 +49,7 @@ async def _8ball(ctx, *, question=None):
                         'Without a doubt.',
                         'Yes – definitely.',
                         'You may rely on it.',
-                        ' As I see it, yes.',
+                        'As I see it, yes.',
                         'Most likely.',
                         'Outlook good.',
                         'Yes.',
@@ -50,23 +65,26 @@ async def _8ball(ctx, *, question=None):
                         'Outlook not so good.',
                         'Very doubtful.']
             await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
-    except:
-        await ctx.send("An Except occured. Try again.")
-
-@deerank.command()
-async def clear(ctx, amount=5):
-    await ctx.channel.purge(limit=amount)
-
+    except Exception as e:
+        await ctx.send("An error occured. This will be logged for reference.")
+        with open('deerank.log','a') as logger:
+            logger.write(f"message: {ctx.message.content}\n logged: {str(e)}\n\n")
+    finally:
+        pass
 
 @deerank.command()                                                              #still have to try
 async def kick(ctx, member: discord.Member=None, *, reason=None):
     if not member==None:
         try:
-            cur_guild_owner=ctx.message.guild.owner_id
-            if ctx.message.author.id==cur_guild_owner:
-                await member.kick(reason=reason)
+            cur_guild=ctx.message.guild
+            if cur_guild.member(member.id):
+                cur_guild_owner=ctx.message.guild.owner_id
+                if ctx.message.author.id==cur_guild_owner:
+                    await member.kick(reason=reason)
+                else:
+                    await ctx.send(f"{ctx.message.author.mention}, you are not classified to do that.\n Report any pussy fights to your superior, {ctx.message.guild.owner.mention}.")
             else:
-                await ctx.send(f"{ctx.message.author.mention}, you are not classified to do that.\n Report any pussy fights to your superior, {ctx.message.guild.owner.mention}.")
+                await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \n{member} is not a member of this guild.")
         except:
             await ctx.send(f"An error occured. Please check whether the name of the member was spelt right. \nGiven Name:{member}")
     else:
@@ -97,7 +115,7 @@ async def dad_joke(ctx):
         else:
             await ctx.send(f"You are your dad's greatest joke!")
     except:
-         await ctx.send("Thou speaking the language of retards. \nThou may choose to try again.\nOr not.\n Whatever.")
+        await ctx.send("Thou speaking the language of retards. \nThou may choose to try again.\nOr not.\n Whatever.")
 
 @deerank.command(pass_context=True)
 async def df(ctx, member: discord.Member=None):
@@ -113,4 +131,4 @@ async def df(ctx, member: discord.Member=None):
 
 
 
-deerank.run('NzMzNjg2MjI3Njg0ODE4OTQ2.XxGx0Q.kijzk6efHHcXccrLnDHs-pfQwFE')
+deerank.run('TOKENNzMzNjg2MjI3Njg0ODE4OTQ2.Xxk-Iw.jDF9961Smhi8lVYN-6G2Dj3tuMMTOKEN')
