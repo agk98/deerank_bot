@@ -7,6 +7,7 @@ from itertools import cycle
 import random
 from dad_joke import *
 from shakespeare_insults import *
+from discord.ext.commands import BadArgument
 
 # to add logging with logging module
 # import logging
@@ -23,6 +24,10 @@ deerank=commands.Bot(command_prefix='>')
 @deerank.event                  # when it logs in
 async def on_ready():
     print("deerank is ready")
+
+@deerank.event
+async def on_command_error(ctx, error):
+    await ctx.send("An error occured and I can't figure out what it is. Please check whether your command had all the right parameters or no.")
 
 @deerank.command()              # to make the bot logout
 async def leave(ctx):
@@ -83,12 +88,15 @@ async def kick(ctx, member: discord.Member=None, *, reason=None):
                     await member.kick(reason=reason)
                 else:
                     await ctx.send(f"{ctx.message.author.mention}, you are not classified to do that.\n Report any pussy fights to your superior, {ctx.message.guild.owner.mention}.")
-            else:
-                await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \n{member} is not a member of this guild.")
         except:
             await ctx.send(f"An error occured. Please check whether the name of the member was spelt right. \nGiven Name:{member}")
     else:
         await ctx.send(f"Dear retard, mention the name of the person you'd like to deerank!")
+
+@kick.error
+async def kick_error(ctx, error):
+    if isinstance(error, commands.BadArgument):
+        await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \nThere is no member that goes by that name in this guild.")
 
 @deerank.command()                                                               #try
 async def ban(ctx, member: discord.Member=None, *, reason=None):
@@ -104,6 +112,10 @@ async def ban(ctx, member: discord.Member=None, *, reason=None):
     else:
         await ctx.send(f"Dear retard, mention the name of the person you'd like to banish!")
 
+@ban.error
+async def ban_error(ctx, error):
+    if isinstance(error, commands.BadArgument):
+        await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \nThere is no member that goes by that name in this guild.")
 
 
 @deerank.command()
@@ -117,7 +129,7 @@ async def dad_joke(ctx):
     except:
         await ctx.send("Thou speaking the language of retards. \nThou may choose to try again.\nOr not.\n Whatever.")
 
-@deerank.command(pass_context=True)
+@deerank.command()
 async def df(ctx, member: discord.Member=None):
     try:
         if member==None:
@@ -130,5 +142,8 @@ async def df(ctx, member: discord.Member=None):
 
 
 
+f= open('deerank_bot.Token','r')  
+token=f.read()
+f.close() 
 
-deerank.run('TOKENNzMzNjg2MjI3Njg0ODE4OTQ2.Xxk-Iw.jDF9961Smhi8lVYN-6G2Dj3tuMMTOKEN')
+deerank.run(str(token))
