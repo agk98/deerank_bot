@@ -7,7 +7,8 @@ from itertools import cycle
 import random
 from dad_joke import *
 from shakespeare_insults import *
-from discord.ext.commands import BadArgument
+from discord.ext.commands import BadArgument,MissingRequiredArgument
+import os
 
 # to add logging with logging module
 # import logging
@@ -21,27 +22,39 @@ from discord.ext.commands import BadArgument
 
 deerank=commands.Bot(command_prefix='>')
 
-@deerank.event                  # when it logs in
-async def on_ready():
-    print("deerank is ready")
 
-@deerank.event
-async def on_command_error(ctx, error):
-    await ctx.send("An error occured and I can't figure out what it is. Please check whether your command had all the right parameters or no.")
+@deerank.command()
+async def load(ctx, extension):
+    deerank.load_extension(f"cogs.{extension}")
 
-@deerank.command()              # to make the bot logout
-async def leave(ctx):
-    try:
-        if ctx.message.guild.owner_id==ctx.message.author.id:
-            await deerank.close()
-        else:
-            await ctx.send("You are not authorised to kick me out!")
-    except Exception as e:
-        await ctx.send("An error occured. This will be logged for reference.")
-        with open('deerank.log','a') as logger:
-            logger.write(f"message: {ctx.message.content}\nlogged: {str(e)}\n\n")
-    finally:
-        pass
+@deerank.command()
+async def unload(ctx, extension):
+    deerank.unload_extension(f'cogs.{extension}')
+
+
+
+
+# @deerank.event                  
+# async def on_ready():
+#     print("deerank is ready")
+
+# @deerank.event
+# async def on_command_error(ctx, error):
+#     await ctx.send("An error occured and I can't figure out what it is. Please check whether your command had all the right parameters or no.")
+
+# @deerank.command()              # to make the bot logout
+# async def leave(ctx):
+#     try:
+#         if ctx.message.guild.owner_id==ctx.message.author.id:
+#             await deerank.close()
+#         else:
+#             await ctx.send("You are not authorised to kick me out!")
+#     except Exception as e:
+#         await ctx.send("An error occured. This will be logged for reference.")
+#         with open('deerank.log','a') as logger:
+#             logger.write(f"message: {ctx.message.content}\nlogged: {str(e)}\n\n")
+#     finally:
+#         pass
 
 @deerank.command(aliases=['8ball'])         # 8ball
 async def _8ball(ctx, *, question=None):
@@ -77,45 +90,48 @@ async def _8ball(ctx, *, question=None):
     finally:
         pass
 
-@deerank.command()                                                              #still have to try
-async def kick(ctx, member: discord.Member=None, *, reason=None):
-    if not member==None:
-        try:
-            cur_guild=ctx.message.guild
-            if cur_guild.member(member.id):
-                cur_guild_owner=ctx.message.guild.owner_id
-                if ctx.message.author.id==cur_guild_owner:
-                    await member.kick(reason=reason)
-                else:
-                    await ctx.send(f"{ctx.message.author.mention}, you are not classified to do that.\n Report any pussy fights to your superior, {ctx.message.guild.owner.mention}.")
-        except:
-            await ctx.send(f"An error occured. Please check whether the name of the member was spelt right. \nGiven Name:{member}")
-    else:
-        await ctx.send(f"Dear retard, mention the name of the person you'd like to deerank!")
+# @deerank.command()                                                              #still have to try
+# async def kick(ctx, member: discord.Member=None, *, reason=None):
+#     if not member==None:
+#         try:
+#             cur_guild=ctx.message.guild
+#             if cur_guild.member(member.id):
+#                 cur_guild_owner=ctx.message.guild.owner_id
+#                 if ctx.message.author.id==cur_guild_owner:
+#                     await member.kick(reason=reason)
+#                 else:
+#                     await ctx.send(f"{ctx.message.author.mention}, you are not classified to do that.\n Report any pussy fights to your superior, {ctx.message.guild.owner.mention}.")
+#         except:
+#             await ctx.send(f"An error occured. Please check whether the name of the member was spelt right. \nGiven Name:{member}")
+#     else:
+#         await ctx.send(f"Dear retard, mention the name of the person you'd like to deerank!")
 
-@kick.error
-async def kick_error(ctx, error):
-    if isinstance(error, commands.BadArgument):
-        await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \nThere is no member that goes by that name in this guild.")
+# @kick.error
+# async def kick_error(ctx, error):
+#     if isinstance(error, commands.BadArgument):
+#         await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \nThere is no member that goes by that name in this guild.")
+#     else:
+#         if isinstance(error, commands.MissingRequiredArgument):
+#             await ctx.send("missing name")
 
-@deerank.command()                                                               #try
-async def ban(ctx, member: discord.Member=None, *, reason=None):
-    if not member==None:
-        try:
-            cur_guild_owner=ctx.message.guild.owner_id
-            if ctx.message.author.id==cur_guild_owner:
-                await member.ban(reason=reason)
-            else:
-                await ctx.send(f"{ctx.message.author.mention}, you are not classified to do that.\n Report any pussy fights to your superior, {ctx.message.guild.owner.mention}.")
-        except:
-            await ctx.send(f"An error occured. Please check whether the name of the member was spelt right. \nGiven Name:{member}")
-    else:
-        await ctx.send(f"Dear retard, mention the name of the person you'd like to banish!")
+# @deerank.command()                                                               #try
+# async def ban(ctx, member: discord.Member=None, *, reason=None):
+#     if not member==None:
+#         try:
+#             cur_guild_owner=ctx.message.guild.owner_id
+#             if ctx.message.author.id==cur_guild_owner:
+#                 await member.ban(reason=reason)
+#             else:
+#                 await ctx.send(f"{ctx.message.author.mention}, you are not classified to do that.\n Report any pussy fights to your superior, {ctx.message.guild.owner.mention}.")
+#         except:
+#             await ctx.send(f"An error occured. Please check whether the name of the member was spelt right. \nGiven Name:{member}")
+#     else:
+#         await ctx.send(f"Dear retard, mention the name of the person you'd like to banish!")
 
-@ban.error
-async def ban_error(ctx, error):
-    if isinstance(error, commands.BadArgument):
-        await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \nThere is no member that goes by that name in this guild.")
+# @ban.error
+# async def ban_error(ctx, error):
+#     if isinstance(error, commands.BadArgument):
+#         await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \nThere is no member that goes by that name in this guild.")
 
 
 @deerank.command()
@@ -145,5 +161,9 @@ async def df(ctx, member: discord.Member=None):
 f= open('deerank_bot.Token','r')  
 token=f.read()
 f.close() 
+
+for filename in os.listdir('./cogs'):
+    if filename.endswith('.py'):
+        deerank.load_extension(f'cogs.{filename[:-3]}')
 
 deerank.run(str(token))
