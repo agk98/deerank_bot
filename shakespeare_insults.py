@@ -26,8 +26,19 @@ class Insults:
                 'Thou is an eater of broken meats!',
                 'There’s no more faith in thee than in a stewed prune.',
                 'What a thrice-double ass!',
-                'Thou cream faced loon!',
+                'Thou cream faced loon! Where got\'st thou that goose look?',
                 'I am sick when I do look on thee.',
+                'Your mom\'s a hoe',
+                'The sight of thou dost infect my eyes!',
+                'Thou have a plentiful lack of wit',
+                'Away, you starvelling, you elf-skin, you dried neat\'s-tongue,bull\'s-pizzle, you stock-dish',
+                'I scorn you, scurvy companion',
+                'Methink\'st thou art a general offence and every man should beat thee.',
+                'Thine face is not worth sunburning.',
+                'Thou art a boil, a plague sore',
+                'Thou is like the toad; ugly and venomous.'
+                'Thou damned and luxurious mountain goat.',
+                'Thou whoreson zed , thou unnecessary letter!'
         ]
 
 def get_insult():
