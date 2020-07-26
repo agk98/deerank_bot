@@ -4,6 +4,7 @@ from discord.ext.commands import BadArgument,MissingRequiredArgument
 import random
 from dad_joke import *
 from shakespeare_insults import *
+import asyncio
 
 class Text(commands.Cog):
     def __init__(self, client):
@@ -15,33 +16,35 @@ class Text(commands.Cog):
 
     @commands.command(aliases=['8ball'])
     async def _8ball(self, ctx, *, question):
-        try:
-            responses=['It is certain',
-                        'It is decidedly so.',
-                        'Without a doubt.',
-                        'Yes – definitely.',
-                        'You may rely on it.',
-                        'As I see it, yes.',
-                        'Most likely.',
-                        'Outlook good.',
-                        'Yes.',
-                        'Signs point to yes.',
-                        'Reply hazy, try again.',
-                        'Ask again later.',
-                        'Better not tell you now.',
-                        'Cannot predict now.',
-                        'Concentrate and ask again.',
-                        "Don't count on it.",
-                        "My reply is no.",
-                        'My sources say no.',
-                        'Outlook not so good.',
-                        'Very doubtful.']
-            await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
-        except Exception as e:
-            await ctx.send("An error occured. This will be logged for consideration.")
-            self.logging_errors(ctx, e)
-        finally:
-            pass
+        async with ctx.channel.typing():
+            await asyncio.sleep(1)
+            try:
+                responses=['It is certain',
+                            'It is decidedly so.',
+                            'Without a doubt.',
+                            'Yes – definitely.',
+                            'You may rely on it.',
+                            'As I see it, yes.',
+                            'Most likely.',
+                            'Outlook good.',
+                            'Yes.',
+                            'Signs point to yes.',
+                            'Reply hazy, try again.',
+                            'Ask again later.',
+                            'Better not tell you now.',
+                            'Cannot predict now.',
+                            'Concentrate and ask again.',
+                            "Don't count on it.",
+                            "My reply is no.",
+                            'My sources say no.',
+                            'Outlook not so good.',
+                            'Very doubtful.']
+                await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
+            except Exception as e:
+                await ctx.send("An error occured. This will be logged for consideration.")
+                self.logging_errors(ctx, e)
+            finally:
+                pass
     @_8ball.error
     async def _8ball_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
@@ -52,8 +55,10 @@ class Text(commands.Cog):
 
     @commands.command()
     async def df(self, ctx, member:discord.Member):
-        new_insult=get_insult()
-        await ctx.send(f"Dear {member.mention},\n{new_insult}")
+        async with ctx.channel.typing():
+            await asyncio.sleep(1)
+            new_insult=get_insult()
+            await ctx.send(f"Dear {member.mention},\n{new_insult}")
 
     @df.error
     async def df_error(self, ctx, error):
@@ -63,15 +68,17 @@ class Text(commands.Cog):
             await ctx.send(f"Dear {ctx.message.author.mention}, you are a retard. \nThere is no member that goes by that name in this guild.")
         else:
             await ctx.send("An error occured. This will be logged for future consideration.")
-            self.logging_errors(ctx,e)
+            self.logging_errors(ctx,error)
     
     @commands.command()
     async def dad_joke(self, ctx):
-        new_joke=request_joke()
-        if not new_joke==0:
-            await ctx.send(f"{new_joke}")
-        else:
-            await ctx.send("I dont have a dad joke for you right now.")
+        async with ctx.channel.typing():
+            await asyncio.sleep(1)
+            new_joke=request_joke()
+            if not new_joke==0:
+                await ctx.send(f"{new_joke}")
+            else:
+                await ctx.send("I dont have a dad joke for you right now.")
     
     @dad_joke.error
     async def joke_error(self, ctx, error):
